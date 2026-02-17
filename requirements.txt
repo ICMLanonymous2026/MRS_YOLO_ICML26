@@ -1,0 +1,39 @@
+# Core deep learning
+torch>=2.1.0
+torchvision>=0.16.0
+
+# Scientific stack
+numpy>=1.24.0
+scipy>=1.11.0
+pandas>=2.0.0
+
+# Config & serialization
+pyyaml>=6.0
+json5>=0.9.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Image / I/O
+Pillow>=10.0.0
+opencv-python>=4.8.0
+
+# Progress bars / logging
+tqdm>=4.66.0
+rich>=13.5.0
+
+# Evaluation & metrics
+scikit-learn>=1.3.0
+
+# Utilities
+einops>=0.6.0           # tensor reshaping
+thop>=0.1.1             # FLOPs and params counting
+psutil>=5.9.0           # system monitoring (CPU, RAM usage)
+pycocotools>=2.0.7      # COCO-style evaluation
+
+# Development / testing
+pytest>=7.4.0
+black>=23.9.0           # code formatting
+isort>=5.12.0           # import sorting
+flake8>=6.1.0           # linting
