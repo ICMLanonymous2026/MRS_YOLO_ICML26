@@ -1,7 +1,7 @@
 
-# MRS-YOLO (ICLR 2026 Submission)
+# MRS-YOLO (ICML 2026 Submission)
 
-This repository contains the anonymized implementation of our ICLR 2026 submission.  
+This repository contains the anonymized implementation of our ICML 2026 submission.  
 The code is provided for transparency and reproducibility in line with the double-blind review policy.  
 
 ---
