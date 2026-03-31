@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath,amssymb}
+\usepackage[ruled,vlined]{algorithm2e}
+
+\begin{document}
+
+\begin{algorithm}[t]
+\caption{\textsc{Oracle-OR} from post-NMS single-resolution predictions}
+\label{alg:oracle_or}
+
+\KwIn{
+Post-NMS prediction sets $\{\mathcal{P}_r\}_{r=1}^{R}$ from the $R$ single-resolution models, where each prediction
+$p=(b_p,c_p,s_p)$ contains a bounding box $b_p$, a class label $c_p$, and a confidence score $s_p$;\\
+Ground-truth set $\mathcal{G}=\{(b_g,c_g)\}_{g=1}^{N_G}$;\\
+IoU threshold $\tau$.
+}
+
+\KwOut{
+Oracle prediction set $\mathcal{P}_{\mathrm{oracle}}$;\\
+Oracle false-alarm set $\mathcal{F}_{\mathrm{oracle}}$.
+}
+
+\BlankLine
+$\mathcal{P}_{\mathrm{all}} \leftarrow \bigcup_{r=1}^{R} \mathcal{P}_r$\;
+$\mathcal{P}_{\mathrm{oracle}} \leftarrow \emptyset$\;
+$\mathcal{P}_{\mathrm{matched}} \leftarrow \emptyset$\;
+
+\BlankLine
+\ForEach{$(b_g,c_g)\in\mathcal{G}$}{
+    $\mathcal{M}_g \leftarrow \emptyset$\tcp*{Predictions intersecting ground truth $g$}
+
+    \ForEach{$(b_p,c_p,s_p)\in\mathcal{P}_{\mathrm{all}}$}{
+        \If{$\mathrm{IoU}(b_p,b_g)\geq \tau$}{
+            add $(b_p,c_p,s_p)$ to $\mathcal{M}_g$\;
+        }
+    }
+
+    \If{$\mathcal{M}_g \neq \emptyset$}{
+        $\mathcal{M}_g^{\mathrm{cls}} \leftarrow \{(b_p,c_p,s_p)\in\mathcal{M}_g \;:\; c_p=c_g\}$\tcp*{Class filtering}
+
+        \If{$\mathcal{M}_g^{\mathrm{cls}} \neq \emptyset$}{
+            $\mathcal{M}_g \leftarrow \mathcal{M}_g^{\mathrm{cls}}$\;
+        }
+
+        $p^*(g) \leftarrow \arg\max_{(b_p,c_p,s_p)\in\mathcal{M}_g} \mathrm{IoU}(b_p,b_g)$\;
+        add $p^*(g)$ to $\mathcal{P}_{\mathrm{oracle}}$\;
+        add all elements of $\mathcal{M}_g$ to $\mathcal{P}_{\mathrm{matched}}$\;
+    }
+}
+
+\BlankLine
+$\mathcal{F}_{\mathrm{raw}} \leftarrow \mathcal{P}_{\mathrm{all}} \setminus \mathcal{P}_{\mathrm{matched}}$\tcp*{Predictions with no intersection with any ground truth}
+
+\BlankLine
+$\mathcal{F}_{\mathrm{oracle}} \leftarrow \mathcal{F}_{\mathrm{raw}}$\;
+
+\ForEach{$p_i=(b_i,c_i,s_i)\in\mathcal{F}_{\mathrm{raw}}$}{
+    \ForEach{$p_j=(b_j,c_j,s_j)\in\mathcal{F}_{\mathrm{raw}}$}{
+        \If{$i\neq j$ \textbf{and} $\mathrm{IoU}(b_i,b_j)\geq \tau$}{
+            \If{$\mathrm{area}(b_i) < \mathrm{area}(b_j)$}{
+                remove $p_i$ from $\mathcal{F}_{\mathrm{oracle}}$\;
+            }
+        }
+    }
+}
+
+\BlankLine
+$\mathcal{P}_{\mathrm{oracle}} \leftarrow \mathcal{P}_{\mathrm{oracle}} \cup \mathcal{F}_{\mathrm{oracle}}$\;
+
+\BlankLine
+\Return{$\mathcal{P}_{\mathrm{oracle}},\ \mathcal{F}_{\mathrm{oracle}}$}\;
+
+\end{algorithm}
+
+\end{document}
